@@ -208,7 +208,7 @@ with tab_home:
 
     if os.path.exists(gradcam_path):
         st.image(gradcam_path, use_container_width=True)
-        st.info('Image generated using XAI logic...')
+        st.info('Image generated using XAI logic used as a general reference showing how doctors will interpret the image following color patterns for further analysis')
     else:
         st.error(f"⚠️ Image not found at: {gradcam_path}")
 
@@ -596,5 +596,6 @@ if st.session_state.switch_to_scan:
         height=0, width=0
 
     )
+
 
 
