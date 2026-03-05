@@ -204,13 +204,13 @@ with tab_home:
 
     st.markdown("<h3 style='text-align:center;'>Visual Diagnostic Targeting</h3>", unsafe_allow_html=True)
 # Updated path to include 'assets/'
-gradcam_path = "assets/gradcam_final_overlay.png" 
+    gradcam_path = "assets/gradcam_final_overlay.png" 
 
-if os.path.exists(gradcam_path):
-    st.image(gradcam_path, use_container_width=True)
-    st.info('Image generated using XAI logic...')
-else:
-    st.error(f"⚠️ Image not found at: {gradcam_path}")
+    if os.path.exists(gradcam_path):
+        st.image(gradcam_path, use_container_width=True)
+        st.info('Image generated using XAI logic...')
+    else:
+        st.error(f"⚠️ Image not found at: {gradcam_path}")
 
 
 # =========================================================
@@ -521,12 +521,12 @@ with tab_analytics:
 
     st.markdown("<h3 style='text-align:center;'>Confusion Matrix</h3>", unsafe_allow_html=True)
 # Updated path to include 'assets/'
-matrix_path = "assets/final_confusion_matrix_3class.png"
+    matrix_path = "assets/final_confusion_matrix_3class.png"
 
-if os.path.exists(matrix_path):
-    st.image(matrix_path, use_container_width=True)
-else:
-    st.error(f"⚠️ Image not found at: {matrix_path}")
+    if os.path.exists(matrix_path):
+        st.image(matrix_path, use_container_width=True)
+    else:
+        st.error(f"⚠️ Image not found at: {matrix_path}")
     st.markdown("---")
     st.markdown("<h3 style='text-align:center;'>Cloud Diagnostic Logs</h3>", unsafe_allow_html=True)
 
@@ -596,4 +596,5 @@ if st.session_state.switch_to_scan:
         height=0, width=0
 
     )
+
 
