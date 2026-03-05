@@ -203,11 +203,14 @@ with tab_home:
     """)
 
     st.markdown("<h3 style='text-align:center;'>Visual Diagnostic Targeting</h3>", unsafe_allow_html=True)
-    if os.path.exists("gradcam_final_overlay.png"):
-        st.image("gradcam_final_overlay.png", use_container_width=True)
-        st.info('Image generated using XAI logic used as a general reference showing how doctors will interpret the image following color patterns for further analysis')
-    else:
-        st.info("Grad-CAM image not found in root directory.")
+# Updated path to include 'assets/'
+gradcam_path = "assets/gradcam_final_overlay.png" 
+
+if os.path.exists(gradcam_path):
+    st.image(gradcam_path, use_container_width=True)
+    st.info('Image generated using XAI logic...')
+else:
+    st.error(f"⚠️ Image not found at: {gradcam_path}")
 
 
 # =========================================================
@@ -517,11 +520,13 @@ with tab_analytics:
     """)
 
     st.markdown("<h3 style='text-align:center;'>Confusion Matrix</h3>", unsafe_allow_html=True)
-    if os.path.exists("final_confusion_matrix_3class.png"):
-        st.image("final_confusion_matrix_3class.png", use_container_width=True)
-    else:
-        st.info("Confusion matrix image not found in root directory.")
+# Updated path to include 'assets/'
+matrix_path = "assets/final_confusion_matrix_3class.png"
 
+if os.path.exists(matrix_path):
+    st.image(matrix_path, use_container_width=True)
+else:
+    st.error(f"⚠️ Image not found at: {matrix_path}")
     st.markdown("---")
     st.markdown("<h3 style='text-align:center;'>Cloud Diagnostic Logs</h3>", unsafe_allow_html=True)
 
@@ -591,3 +596,4 @@ if st.session_state.switch_to_scan:
         height=0, width=0
 
     )
+
