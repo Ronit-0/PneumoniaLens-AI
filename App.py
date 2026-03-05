@@ -96,9 +96,25 @@ h1,h2,h3 { color:#00FFFF !important; }
 @st.cache_resource
 def load_model():
     model_path = "pneumonia_3class_97_perfection.h5"
-    if os.path.exists(model_path):
-        return tf.keras.models.load_model(model_path, compile=False)
-    return None
+    # The direct link you just found
+    model_url = "https://huggingface.co/Ronit-0/PneumoniaLens-Weights/resolve/main/pneumonia_3class_97_perfection.h5?download=true"
+
+    if not os.path.exists(model_path):
+        with st.spinner("☁️ AI Model not found. Downloading from Cloud..."):
+            try:
+                response = requests.get(model_url, stream=True)
+                if response.status_code == 200:
+                    with open(model_path, "wb") as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                else:
+                    st.error("❌ Cloud connection failed.")
+                    return None
+            except Exception as e:
+                st.error(f"❌ Download Error: {e}")
+                return None
+
+    return tf.keras.models.load_model(model_path, compile=False)
 
 model = load_model()
 CLASS_NAMES = ['NORMAL', 'PNEUMONIA_BACTERIA', 'PNEUMONIA_VIRAL']
@@ -573,4 +589,5 @@ if st.session_state.switch_to_scan:
         </script>
         """,
         height=0, width=0
+
     )
