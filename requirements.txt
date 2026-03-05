@@ -1,0 +1,10 @@
+streamlit
+tensorflow
+numpy
+pandas
+opencv-python-headless
+Pillow
+python-docx
+reportlab
+st-gsheets-connection
+requests
