@@ -16,6 +16,7 @@ from streamlit_gsheets import GSheetsConnection
 import time
 import requests
 import streamlit.components.v1 as components
+import base64
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(page_title="PneumoniaLens AI", page_icon="🫁", layout="wide", initial_sidebar_state="collapsed")
@@ -67,9 +68,18 @@ def check_session():
     # 1. Look for a persistent token in the URL if the page was refreshed
     if "token" in st.query_params:
         if not st.session_state.logged_in_doctor:
-            st.session_state.logged_in_doctor = st.query_params["token"]
-            st.session_state.doctor_name = "Authorized Doctor" # Fallback name on refresh
-            st.session_state.last_activity = datetime.now()
+            try:
+                # Decode the long token back into the ID and Name
+                decoded_bytes = base64.urlsafe_b64decode(st.query_params["token"].encode())
+                decoded_str = decoded_bytes.decode()
+                recovered_id, recovered_name = decoded_str.split("||")
+                
+                st.session_state.logged_in_doctor = recovered_id
+                st.session_state.doctor_name = recovered_name 
+                st.session_state.last_activity = datetime.now()
+            except Exception:
+                # If someone messes with the token, clear it for security
+                st.query_params.clear()
 
     # 2. The 15-Minute Auto-Lock (900 seconds)
     if st.session_state.logged_in_doctor or st.session_state.logged_in_admin:
@@ -87,7 +97,6 @@ def update_activity():
     st.session_state.last_activity = datetime.now()
 
 check_session()
-
 # ---------------- STYLING ----------------
 st.markdown("""
 <style>
@@ -310,8 +319,10 @@ with tab_login:
                     doctor_name = match.iloc[0]["Name"]
                     st.session_state.doctor_name = doctor_name 
                     
-                    # ---> NEW: Inject the Token into the browser URL <---
-                    st.query_params["token"] = clean_id
+                    # ---> NEW: Scramble ID and Name into a secure Base64 token <---
+                    raw_token_string = f"{clean_id}||{doctor_name}"
+                    encoded_token = base64.urlsafe_b64encode(raw_token_string.encode()).decode()
+                    st.query_params["token"] = encoded_token
                     
                     st.session_state.show_login_toast = f"Authenticated successfully: Dr. {doctor_name}"
                     st.session_state.switch_to_scan = True  # <--- FIRE THE AUTO-CLICKER
@@ -612,6 +623,7 @@ if st.session_state.switch_to_scan:
         height=0, width=0
 
     )
+
 
 
 
