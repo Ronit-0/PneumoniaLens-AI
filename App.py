@@ -83,6 +83,11 @@ check_inactivity()
 # ---------------- STYLING ----------------
 st.markdown("""
 <style>
+/* 1. Hide default Streamlit Header and Footer */
+[data-testid="stHeader"] { display: none; }
+footer { visibility: hidden; }
+
+/* 2. Your Custom App Styling */
 .stApp { background-color:#000000; color:white; }
 .stButton>button { background-color:#00FFFF; color:black; font-weight:bold; border-radius:8px; width: 100%; }
 h1,h2,h3 { color:#00FFFF !important; }
@@ -596,6 +601,7 @@ if st.session_state.switch_to_scan:
         height=0, width=0
 
     )
+
 
 
 
