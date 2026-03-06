@@ -591,7 +591,7 @@ with tab_scan:
                 return buffer
 
             st.download_button("Download PDF Report", generate_pdf(), file_name=f"report_{final_label}.pdf")
-
+    st.caption("This diagnostic tool is designed to assist radiologists by providing a second opinion. It is not a replacement for professional medical judgment. Always consult with a healthcare provider for diagnosis and treatment decisions.")
 
 # =========================================================
 # =================== ANALYTICS ===========================
@@ -689,6 +689,7 @@ if st.session_state.switch_to_scan:
         height=0, width=0
 
     )
+
 
 
 
