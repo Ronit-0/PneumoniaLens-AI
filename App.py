@@ -62,23 +62,31 @@ if "switch_to_scan" not in st.session_state:
 if st.session_state.show_login_toast:
     st.toast(st.session_state.show_login_toast, icon="✅")
     st.session_state.show_login_toast = False
-# ---------------- SECURITY: AUTO-LOCK (2 MINS) ----------------
-def check_inactivity():
+# ---------------- SECURITY: 15-MIN TIMEOUT & PERSISTENT TOKEN ----------------
+def check_session():
+    # 1. Look for a persistent token in the URL if the page was refreshed
+    if "token" in st.query_params:
+        if not st.session_state.logged_in_doctor:
+            st.session_state.logged_in_doctor = st.query_params["token"]
+            st.session_state.doctor_name = "Authorized Doctor" # Fallback name on refresh
+            st.session_state.last_activity = datetime.now()
+
+    # 2. The 15-Minute Auto-Lock (900 seconds)
     if st.session_state.logged_in_doctor or st.session_state.logged_in_admin:
         now = datetime.now()
         elapsed = (now - st.session_state.last_activity).total_seconds()
-        if elapsed > 120:  # 2 Minutes
+        if elapsed > 900:  # 15 Minutes
             st.session_state.logged_in_doctor = None
-            st.session_state.doctor_name = ""       # <--- Clear name on timeout
+            st.session_state.doctor_name = "" 
             st.session_state.logged_in_admin = False
-            st.session_state.last_activity = now
-            st.warning("Session expired due to 2 minutes of inactivity.")
+            st.query_params.clear() # Wipe the URL token
+            st.warning("Session expired due to 15 minutes of inactivity.")
             st.rerun()
 
 def update_activity():
     st.session_state.last_activity = datetime.now()
 
-check_inactivity()
+check_session()
 
 # ---------------- STYLING ----------------
 st.markdown("""
@@ -158,8 +166,9 @@ with col_head3:
     if st.session_state.logged_in_admin or st.session_state.logged_in_doctor:
         if st.button("Secure Logout"):
             st.session_state.logged_in_doctor = None
-            st.session_state.doctor_name = ""       # <--- Clear name on logout
+            st.session_state.doctor_name = ""       
             st.session_state.logged_in_admin = False
+            st.query_params.clear() # <--- Destroy the token!
             st.rerun()
 
 st.markdown("<br>", unsafe_allow_html=True)
@@ -301,13 +310,15 @@ with tab_login:
                     doctor_name = match.iloc[0]["Name"]
                     st.session_state.doctor_name = doctor_name 
                     
+                    # ---> NEW: Inject the Token into the browser URL <---
+                    st.query_params["token"] = clean_id
+                    
                     st.session_state.show_login_toast = f"Authenticated successfully: Dr. {doctor_name}"
                     st.session_state.switch_to_scan = True  # <--- FIRE THE AUTO-CLICKER
                     
-                    st.rerun()
+                    st.rerun() 
                 else:
-                    st.error("Invalid Doctor ID or Password.")
-                        
+                    st.error("Invalid Doctor ID or Password.")                        
     # --- 3. ADMIN LOGIN TAB ---
     with sub_tab_admin:
         st.subheader("System Administrator Login")
@@ -601,6 +612,7 @@ if st.session_state.switch_to_scan:
         height=0, width=0
 
     )
+
 
 
 
